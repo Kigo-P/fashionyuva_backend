@@ -24,6 +24,7 @@ class User(db.Model, SerializerMixin):
     last_name = db.Column(db.String(), nullable=False)
     email = db.Column(db.String(), unique=True, nullable=False)
     password = db.Column(db.String(), nullable=False)
+    contact = db.Column(db.String(), nullable=False)
     user_role = db.Column(db.String(), nullable=False)
     created_at = db.Column(db.DateTime, default=db.func.current_timestamp())
 
@@ -46,6 +47,21 @@ class User(db.Model, SerializerMixin):
         "-contactus.user",
         "-reviews.user",
     )
+
+    # validating the email
+    @validates('email')
+    def validate_email(self, key, address):
+        if '@' not in address:
+            raise ValueError("Failed simple email validation")
+        return address
+    
+    # validating users contact to be exactly 10 digits
+    @validates("contact")
+    def validates_contact(self, key, value):
+        if not value or len(value) != 10 or not value.isdigit():
+            raise ValueError("The contact must have 10 digits")
+        else:
+            return value
 
     #  creating a string version using repr
     def __repr__(self):
@@ -88,6 +104,13 @@ class Product(db.Model, SerializerMixin):
         "-orderproduct.product",
         "-reviews.product",
     )
+
+    #  validating the price of the product to be a positive number
+    @validates("price")
+    def validates_price(self, key, price):
+        if price < 1 :
+            raise ValueError ("Price must be between greater than 1")
+        return price
 
     #  creating a string version using repr
     def __repr__(self):
@@ -259,6 +282,18 @@ class ContactUs(db.Model, SerializerMixin):
 
     # setting serialization rules
     serialize_rules = ("-user.contactus",  )
+
+        # validating users contact to be exactly 10 digits
+    @validates("contact")
+    def validates_contact(self, key, value):
+        if not value or len(value) != 10 or not value.isdigit():
+            raise ValueError("The contact must have 10 digits")
+        else:
+            return value
+        
+    #  creating a string version using repr
+    def __repr__(self):
+        return f"<Contact {self.id}: {self.first_name} , {self.last_name} {self.email} {self.contact} has been created>"
 
 # creating Payment Model
 class Payment(db.Model, SerializerMixin):

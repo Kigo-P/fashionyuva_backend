@@ -37,6 +37,7 @@ class Users(Resource):
             last_name = data["last_name"],
             email = data["email"],
             password = password,
+            contact = data["contact"],
             user_role = data["user_role"]
         )
 

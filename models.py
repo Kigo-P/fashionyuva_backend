@@ -53,6 +53,7 @@ class User(db.Model, SerializerMixin):
         "-contactus.user",
         "-reviews.user",
     )
+    
 
     # validating the email
     @validates("email")
@@ -245,8 +246,8 @@ class Review(db.Model, SerializerMixin):
     product = db.relationship("Product", back_populates="reviews")
 
     serialize_rules = (
-        "-user.reviews",
-        "-product.reviews",
+        "-user",
+        "-product",
     )
 
     #  creating a string version using repr

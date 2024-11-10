@@ -12,8 +12,6 @@ class Products(Resource):
         products = Product.query.all()
         return make_response(jsonify([product.to_dict() for product in products]), 200)
 
-
-class Products(Resource):
     def post(self):
         data = request.get_json()
         try:

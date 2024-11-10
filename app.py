@@ -5,6 +5,14 @@ from flask_restful import Api, Resource
 from config import Config
 from models import db
 from products import products
+from users import users
+from contacts import contactus
+from address import address
+from reviews import review
+from orders import orders
+from order_product import order_product
+from payment import payment
+
 
 
 app = Flask(__name__)
@@ -12,6 +20,14 @@ CORS(app)
 app.config.from_object(Config)
 
 app.register_blueprint(products)
+app.register_blueprint(users)
+app.register_blueprint(contactus)
+app.register_blueprint(address)
+app.register_blueprint(review)
+app.register_blueprint(orders)
+app.register_blueprint(order_product)
+app.register_blueprint(payment)
+
 
 db.init_app(app)
 migrate = Migrate(app, db)

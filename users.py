@@ -21,7 +21,7 @@ class Users(Resource):
         # querying the database to get a list of all the users
         users = User.query.all()
         # Looping through users and getting a user as a dictionary using to_dict() method
-        user_dict = [user.to_dict(rules = ("-address", "-carts", "-orders", "-reviews", "-contactus")) for user in users]
+        user_dict = [user.to_dict() for user in users]
         # creating and making a response
         response = make_response(user_dict, 200)
         return response
@@ -52,5 +52,25 @@ class Users(Resource):
         return response
     pass
 
+# creating a UserById Resource
+class UserById(Resource):
+    #  a method to get one user
+    def get(self, id):
+        # querying and filtering the database using the id
+        user = User.query.filter_by(id = id).first()
+        if user:
+            #  creating a user dict using the to_dict method
+            user_dict = user.to_dict()
+            # creating and making a response
+            response = make_response(user_dict, 200)
+            return response
+        else:
+            #  creating and returning a response based on the response body
+            response_body = {"error": "User  not found"}
+            response = make_response(response_body, 404)
+            return response
+    
+
 api.add_resource(Home, "/", endpoint="home")
 api.add_resource(Users, "/users", endpoint="users")
+api.add_resource(UserById, "/users/<int:id>", endpoint="/user_by_id")

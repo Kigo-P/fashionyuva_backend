@@ -92,7 +92,7 @@ class Product(db.Model, SerializerMixin):
     category_id = db.Column(db.Integer, db.ForeignKey("categories.id"))
 
     # a relationship that maps the product to the images
-    images = db.relationship("Image", back_populates="product")
+    images = db.relationship("Image", back_populates="product", cascade="all, delete-orphan")
     # a relationship that maps the product to the categories
     categories = db.relationship("Category", back_populates="product")
     # a relationship that maps the product to the orderproducts
@@ -135,7 +135,7 @@ class Image(db.Model, SerializerMixin):
 
     # a relationship that maps the images to the products
     product = db.relationship(
-        "Product", back_populates="images", cascade="all, delete-orphan"
+        "Product", back_populates="images", single_parent=True
     )
 
     serialize_rules = ("-product.images",)

@@ -1,6 +1,7 @@
 from flask import Blueprint, make_response, jsonify, request
 from flask_restful import Api, Resource
-from models import Product, db
+from psycopg2 import IntegrityError
+from models import Product, db, Category, Image
 
 products = Blueprint("products", __name__)
 api = Api(products)
@@ -11,9 +12,22 @@ class Products(Resource):
         products = Product.query.all()
         return make_response(jsonify([product.to_dict() for product in products]), 200)
 
+
+class Products(Resource):
     def post(self):
         data = request.get_json()
         try:
+            category_name = data.get("category")
+            if category_name:
+                category = Category.query.filter_by(name=category_name).first()
+                if not category:
+                    category = Category(name=category_name)
+                    db.session.add(category)
+                    db.session.commit()
+                category_id = category.id
+            else:
+                category_id = data.get("category_id")
+
             new_product = Product(
                 title=data["title"],
                 description=data["description"],
@@ -21,13 +35,26 @@ class Products(Resource):
                 size=data["size"],
                 color=data["color"],
                 material=data["material"],
-                quantity=data["quantity"],
-                image_id=data.get("image_id"),
-                category_id=data.get("category_id"),
+                quantity=data.get("quantity", 0),
+                category_id=category_id,
             )
             db.session.add(new_product)
             db.session.commit()
+
+            # Add associated images
+            images = data.get("images", [])
+            for image_url in images:
+                new_image = Image(url=image_url, product_id=new_product.id)
+                db.session.add(new_image)
+            db.session.commit()
+
             return make_response(jsonify(new_product.to_dict()), 201)
+
+        except IntegrityError:
+            db.session.rollback()
+            return make_response(
+                jsonify({"error": "Product already exists or invalid input"}), 400
+            )
         except Exception as e:
             db.session.rollback()
             return make_response(jsonify({"error": str(e)}), 400)

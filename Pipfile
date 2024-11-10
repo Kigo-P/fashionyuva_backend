@@ -11,6 +11,7 @@ flask-restful = "*"
 python-dotenv = "*"
 sqlalchemy-serializer = "*"
 faker = "*"
+gunicorn = "*"
 
 [dev-packages]
 

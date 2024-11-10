@@ -34,11 +34,17 @@ class User(db.Model, SerializerMixin):
     )
 
     # a relationship that maps the user to the carts
-    reviews = db.relationship("Review", back_populates="user", cascade="all, delete-orphan")
+    reviews = db.relationship(
+        "Review", back_populates="user", cascade="all, delete-orphan"
+    )
     # a relationship that maps the user to the address
-    address = db.relationship("Address", back_populates="user", cascade="all, delete-orphan")
+    address = db.relationship(
+        "Address", back_populates="user", cascade="all, delete-orphan"
+    )
     # a relationship that maps the user to the contactus
-    contactus = db.relationship("ContactUs", back_populates="user", cascade="all, delete-orphan")
+    contactus = db.relationship(
+        "ContactUs", back_populates="user", cascade="all, delete-orphan"
+    )
 
     serialize_rules = (
         "-orders.user",
@@ -49,12 +55,12 @@ class User(db.Model, SerializerMixin):
     )
 
     # validating the email
-    @validates('email')
+    @validates("email")
     def validate_email(self, key, address):
-        if '@' not in address:
+        if "@" not in address:
             raise ValueError("Failed simple email validation")
         return address
-    
+
     # validating users contact to be exactly 10 digits
     @validates("contact")
     def validates_contact(self, key, value):
@@ -108,8 +114,8 @@ class Product(db.Model, SerializerMixin):
     #  validating the price of the product to be a positive number
     @validates("price")
     def validates_price(self, key, price):
-        if price < 1 :
-            raise ValueError ("Price must be between greater than 1")
+        if price < 1:
+            raise ValueError("Price must be between greater than 1")
         return price
 
     #  creating a string version using repr
@@ -128,7 +134,9 @@ class Image(db.Model, SerializerMixin):
     product_id = db.Column(db.Integer, db.ForeignKey("products.id"))
 
     # a relationship that maps the images to the products
-    product = db.relationship("Product", back_populates="images", cascade="all, delete-orphan")
+    product = db.relationship(
+        "Product", back_populates="images", cascade="all, delete-orphan"
+    )
 
     serialize_rules = ("-product.images",)
 
@@ -168,13 +176,16 @@ class Order(db.Model, SerializerMixin):
     # Foreign key from the user_id
     user_id = db.Column(db.Integer, db.ForeignKey("users.id"))
 
-
     # a relationship that maps the orders to the user
     user = db.relationship("User", back_populates="orders")
     # a relationship that maps the orders to the orderproduct
-    orderproduct = db.relationship("OrderProduct", back_populates="order", cascade="all, delete-orphan")
+    orderproduct = db.relationship(
+        "OrderProduct", back_populates="order", cascade="all, delete-orphan"
+    )
     # a relationship that maps the orders to the payment
-    payment = db.relationship("Payment", back_populates="order", cascade="all, delete-orphan")
+    payment = db.relationship(
+        "Payment", back_populates="order", cascade="all, delete-orphan"
+    )
 
     serialize_rules = (
         "-orderproduct.order",
@@ -185,7 +196,8 @@ class Order(db.Model, SerializerMixin):
     #  creating a string version using repr
     def __repr__(self):
         return f"<Order {self.id}: {self.total_price} , {self.status}has been created>"
-    
+
+
 # creating a model called OrderProducts with the table name of orderproducts
 class OrderProduct(db.Model, SerializerMixin):
     __tablename__ = "orderproducts"
@@ -203,12 +215,14 @@ class OrderProduct(db.Model, SerializerMixin):
     # a relationship that maps the orderproducts to the order
     order = db.relationship("Order", back_populates="orderproduct")
 
-    serialize_rules = ("-product.orderproduct","-order.orderproduct", )
+    serialize_rules = (
+        "-product.orderproduct",
+        "-order.orderproduct",
+    )
 
     #  creating a string version using repr
     def __repr__(self):
         return f"<OrderProduct {self.id}: {self.quantity} has been created>"
-
 
 
 # creating a model called Review with the table name of reviews
@@ -217,7 +231,7 @@ class Review(db.Model, SerializerMixin):
 
     # creating columns
     id = db.Column(db.Integer, primary_key=True)
-    rating= db.Column(db.String(), nullable=False)
+    rating = db.Column(db.String(), nullable=False)
     comment = db.Column(db.String(), nullable=False)
     created_at = db.Column(db.DateTime, default=db.func.current_timestamp())
     # Foreign key from the user_id
@@ -230,32 +244,34 @@ class Review(db.Model, SerializerMixin):
     # a relationship that maps the reviews to the product
     product = db.relationship("Product", back_populates="reviews")
 
-    serialize_rules = ("-user.reviews","-product.reviews", )
+    serialize_rules = (
+        "-user.reviews",
+        "-product.reviews",
+    )
 
     #  creating a string version using repr
     def __repr__(self):
         return f"<Review {self.id}: {self.rating} , {self.comment} has been created>"
-    
+
+
 # creating a model called Address with the table name of addresses
 class Address(db.Model, SerializerMixin):
     __tablename__ = "addresses"
 
     # creating columns
     id = db.Column(db.Integer, primary_key=True)
-    address= db.Column(db.String(), nullable=False)
-    county= db.Column(db.String(), nullable=False)
-    town= db.Column(db.String(), nullable=False)
+    address = db.Column(db.String(), nullable=False)
+    county = db.Column(db.String(), nullable=False)
+    town = db.Column(db.String(), nullable=False)
     zip_code = db.Column(db.Integer(), nullable=False)
-    country= db.Column(db.String(), nullable=False)
+    country = db.Column(db.String(), nullable=False)
     # Foreign key from the user_id
     user_id = db.Column(db.Integer, db.ForeignKey("users.id"))
 
     # a relationship that maps the address to the user
     user = db.relationship("User", back_populates="address")
 
-    serialize_rules = (
-        "-user.address",
-    )
+    serialize_rules = ("-user.address",)
 
     #  creating a string version using repr
     def __repr__(self):
@@ -264,7 +280,7 @@ class Address(db.Model, SerializerMixin):
 
 # creating ContactUs Model
 class ContactUs(db.Model, SerializerMixin):
-    __tablename__ ="contactus"
+    __tablename__ = "contactus"
 
     # creating columns
     id = db.Column(db.Integer, primary_key=True)
@@ -281,23 +297,24 @@ class ContactUs(db.Model, SerializerMixin):
     user = db.relationship("User", back_populates="contactus")
 
     # setting serialization rules
-    serialize_rules = ("-user.contactus",  )
+    serialize_rules = ("-user.contactus",)
 
-        # validating users contact to be exactly 10 digits
+    # validating users contact to be exactly 10 digits
     @validates("contact")
     def validates_contact(self, key, value):
         if not value or len(value) != 10 or not value.isdigit():
             raise ValueError("The contact must have 10 digits")
         else:
             return value
-        
+
     #  creating a string version using repr
     def __repr__(self):
         return f"<Contact {self.id}: {self.first_name} , {self.last_name} {self.email} {self.contact} has been created>"
 
+
 # creating Payment Model
 class Payment(db.Model, SerializerMixin):
-    __tablename__ ="payments"
+    __tablename__ = "payments"
 
     # creating columns
     id = db.Column(db.Integer, primary_key=True)
@@ -314,18 +331,15 @@ class Payment(db.Model, SerializerMixin):
     def __repr__(self):
         return f"<Payment {self.id}: {self.amount} has been created>"
 
+
 # creating Newsletter Model
 class Newsletter(db.Model, SerializerMixin):
-    __tablename__ ="newsletter"
+    __tablename__ = "newsletter"
 
     # creating columns
     id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String(), nullable=False)
 
-
     #  creating a string version using repr
     def __repr__(self):
         return f"<Newsletter {self.id}: {self.email} has been created>"
-
-
-

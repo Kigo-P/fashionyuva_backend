@@ -14,7 +14,6 @@ from order_product import order_product
 from payment import payment
 
 
-
 app = Flask(__name__)
 CORS(app)
 app.config.from_object(Config)
@@ -35,6 +34,14 @@ api = Api(app)
 
 with app.app_context():
     db.create_all()
+
+
+class Wake(Resource):
+    def get(self):
+        return make_response(jsonify({"message": "server is awake"}), 200)
+
+
+api.add_resource(Wake, "/wake", endpoint="wake")
 
 if __name__ == "__main__":
     app.run(port=5555, debug=True)

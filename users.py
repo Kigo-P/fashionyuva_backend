@@ -70,6 +70,48 @@ class UserById(Resource):
             response = make_response(response_body, 404)
             return response
     
+    #  a method to update a user
+    def patch(self, id):
+        # querying and filtering the database using the id
+        user = User.query.filter_by(id = id).first()
+        if user:
+            #  creating a for loop to set the attributes
+            data = request.get_json()
+            for attr in data:
+                setattr(user, attr, data[attr])
+
+            # commiting to the database
+            db.session.commit()
+            #  making the user to a dictionary using to_dict() method
+            user_dict = user.to_dict()
+            # creating and making a response
+            response = make_response(user_dict, 200)
+            return response
+        else:
+            #  creating and returning a response based on the response body
+            response_body = {"error": "User  not found"}
+            response = make_response(response_body, 404)
+            return response
+    
+    #  a method to delete the user
+    def delete(self, id):
+        # querying and filtering the database using the id
+        user1 = User.query.filter_by(id = id).first()
+        if user1:
+            #  deleting the user1 and commiting the changes to the database
+            db.session.delete(user1)
+            db.session.commit()
+            #  creating and returning a response based on the response body
+            response_body = {"message":"user deleted successfully"}
+            response = make_response(response_body, 204)
+            return response
+        else:
+            #  creating and returning a response based on the response body
+            response_body = {"error": "user not found"}
+            response = make_response(response_body, 404)
+            return response
+
+
 
 api.add_resource(Home, "/", endpoint="home")
 api.add_resource(Users, "/users", endpoint="users")

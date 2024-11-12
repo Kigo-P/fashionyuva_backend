@@ -4,19 +4,23 @@ from flask_migrate import Migrate
 from flask_restful import Api, Resource
 from config import Config
 from models import db
-from products import products
+from products.products import products
 from users import users
 from contacts import contactus
 from address import address
 from reviews import review
 from orders import orders
+from auth import auth
 from order_product import order_product
 from payment import payment
+from flask_jwt_extended import JWTManager, jwt_required
 
 
 app = Flask(__name__)
 CORS(app)
 app.config.from_object(Config)
+jwt = JWTManager(app)
+app.register_blueprint(auth)
 
 app.register_blueprint(products)
 app.register_blueprint(users)

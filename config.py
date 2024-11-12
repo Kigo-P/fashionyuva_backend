@@ -6,12 +6,7 @@ load_dotenv()
 
 
 class Config:
-    ENV = os.getenv("ENV", "development")
-    SQLALCHEMY_DATABASE_URI = "postgresql://dennis:TTOszQYBlz7ljFPdZhQtlFvd3PucGvwi@dpg-cso8dj8gph6c73bo21vg-a.oregon-postgres.render.com/fashionyuva"
-    if ENV == "production":
-        SQLALCHEMY_DATABASE_URI = os.getenv("POSTGRES_URI")
-    else:
-        SQLALCHEMY_DATABASE_URI = f"postgresql://{os.getenv('POSTGRES_USERNAME')}:{os.getenv('POSTGRES_PASSWORD')}@localhost/fashionyuva"
+    SQLALCHEMY_DATABASE_URI = os.getenv("POSTGRES_URI")
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     JWT_TOKEN_LOCATION = ["headers"]
     JWT_HEADER_NAME = "Authorization"

@@ -10,10 +10,10 @@ from contacts import contactus
 from address import address
 from reviews import review
 from orders import orders
+from auth import auth
 from order_product import order_product
 from payment import payment
 from flask_jwt_extended import JWTManager, jwt_required
-from .auth import auth
 
 
 app = Flask(__name__)

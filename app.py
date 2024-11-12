@@ -14,6 +14,7 @@ from auth import auth
 from order_product import order_product
 from payment import payment
 from flask_jwt_extended import JWTManager, jwt_required
+from payment import payment
 
 
 app = Flask(__name__)
@@ -29,7 +30,8 @@ app.register_blueprint(address)
 app.register_blueprint(review)
 app.register_blueprint(orders)
 app.register_blueprint(order_product)
-app.register_blueprint(payment)
+# app.register_blueprint(payment)
+app.register_blueprint(payment, url_prefix="/api/payment")
 
 
 db.init_app(app)
@@ -49,23 +51,3 @@ api.add_resource(Wake, "/wake", endpoint="wake")
 
 if __name__ == "__main__":
     app.run(port=5555, debug=True)
-
-
-    # for mpesa 
-
-db = SQLAlchemy()
-
-def create_app():
-    app = Flask(__name__)
-    app.config.from_object(Config)
-    
-    CORS(app)
-    db.init_app(app)
-    
-    from app.routes.payment import payment_bp
-    app.register_blueprint(payment_bp, url_prefix='/api/payment')
-    
-    with app.app_context():
-        db.create_all()
-    
-    return app

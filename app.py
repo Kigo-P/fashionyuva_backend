@@ -4,7 +4,7 @@ from flask_migrate import Migrate
 from flask_restful import Api, Resource
 from config import Config
 from models import db
-from products import products
+from products.products import products
 from users import users
 from contacts import contactus
 from address import address

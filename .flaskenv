@@ -1,3 +1,16 @@
 FLASK_APP=app.py
 FLASK_DEBUG=True
 FLASK_RUN_PORT=5555
+
+
+FLASK_ENV=development
+SECRET_KEY=your-secret-key
+DATABASE_URL=sqlite:///mpesa.db
+
+
+
+MPESA_CONSUMER_KEY=IKeOApLg6jfEe6P4e1jhz3MjcnMT7vHSwuHRe0NqgMnCDYp3
+MPESA_CONSUMER_SECRET=soGXfbtiIAbCtLYq79w2eL1x9H0YGWpcZKUyMuETC8YetbFdgYjNc2WoS3COURcL
+MPESA_BUSINESS_SHORTCODE=174379
+MPESA_PASSKEY=your_passkey
+MPESA_CALLBACK_URL=https://your-domain.com/api/payment/callback

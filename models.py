@@ -3,6 +3,8 @@ from sqlalchemy_serializer import SerializerMixin
 from werkzeug.security import generate_password_hash, check_password_hash
 from sqlalchemy import MetaData
 from flask_sqlalchemy import SQLAlchemy
+from app import db
+from datetime import datetime
 
 #  initializing metadata and adding it to the db
 metadata = MetaData(
@@ -344,3 +346,18 @@ class Newsletter(db.Model, SerializerMixin):
     #  creating a string version using repr
     def __repr__(self):
         return f"<Newsletter {self.id}: {self.email} has been created>"
+
+
+
+class Transaction(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    merchant_request_id = db.Column(db.String(50), unique=True)
+    checkout_request_id = db.Column(db.String(50), unique=True)
+    phone_number = db.Column(db.String(15))
+    amount = db.Column(db.Float)
+    status = db.Column(db.String(20), default='pending')
+    result_code = db.Column(db.String(5))
+    result_desc = db.Column(db.String(100))
+    mpesa_receipt = db.Column(db.String(50))
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)

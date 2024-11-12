@@ -6,7 +6,7 @@ from config import Config
 from models import db
 from products import products
 from users import users
-from contacts import contactus
+from Contacts.contacts import contact_us
 from address import address
 from reviews import review
 from orders import orders
@@ -20,7 +20,7 @@ app.config.from_object(Config)
 
 app.register_blueprint(products)
 app.register_blueprint(users)
-app.register_blueprint(contactus)
+app.register_blueprint(contact_us)
 app.register_blueprint(address)
 app.register_blueprint(review)
 app.register_blueprint(orders)

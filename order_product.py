@@ -63,7 +63,7 @@ class OrderProductsById(Resource):
             data = request.get_json()
             #  creating a for loop to set the attributes
             for attr in data:
-                setattr(orderproduct, attr, data[attr])
+                seiftattr(orderproduct, attr, data[attr])
             
             # commiting to the database
             db.session.commit()

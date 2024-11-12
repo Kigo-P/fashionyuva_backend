@@ -5,13 +5,13 @@ from flask_restful import Api, Resource
 from config import Config
 from models import db
 from products.products import products
-from users import users
+from users.users import users
 from contacts import contactus
 from address import address
-from reviews import review
+from reviews.reviews import review
 from orders import orders
-from auth import auth
-from order_product import order_product
+from authentification.auth import auth
+from order_products.order_product import order_product
 from payment.payment import payment
 from flask_jwt_extended import JWTManager
 from payment.mpesa import payment

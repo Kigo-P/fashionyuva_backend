@@ -15,8 +15,6 @@ class Config:
     JWT_ACCESS_REFRESH_EXPIRES = timedelta(days=30)
     SECRET_KEY = os.getenv("SECRET_KEY", "46ergsgwet5w5fewfweffhdgh")
 
-    #   for mpesa
-
     MPESA_CONSUMER_KEY = os.getenv("MPESA_CONSUMER_KEY")
     MPESA_CONSUMER_SECRET = os.getenv("MPESA_CONSUMER_SECRET")
     MPESA_BUSINESS_SHORTCODE = os.getenv("MPESA_BUSINESS_SHORTCODE")

@@ -66,14 +66,14 @@ class MpesaService:
             data = response.json()
 
             # Create transaction record
-            transaction = Transaction(
-                merchant_request_id=data.get("MerchantRequestID"),
-                checkout_request_id=data.get("CheckoutRequestID"),
-                phone_number=phone_number,
-                amount=amount,
-            )
-            db.session.add(transaction)
-            db.session.commit()
+            # transaction = Transaction(
+            #     merchant_request_id=data.get("MerchantRequestID"),
+            #     checkout_request_id=data.get("CheckoutRequestID"),
+            #     phone_number=phone_number,
+            #     amount=amount,
+            # )
+            # db.session.add(transaction)
+            # db.session.commit()
 
             return data
 

@@ -343,6 +343,8 @@ class Newsletter(db.Model, SerializerMixin):
 
 
 class Transaction(db.Model):
+    __tablename__ = "transactions"
+
     id = db.Column(db.Integer, primary_key=True)
     merchant_request_id = db.Column(db.String(50), unique=True)
     checkout_request_id = db.Column(db.String(50), unique=True)

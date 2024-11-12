@@ -1,12 +1,14 @@
 from models import Review, db
 from flask import Blueprint, make_response, jsonify, request
 from flask_restful import Api, Resource
+from flask_jwt_extended import jwt_required
 
 review = Blueprint("review", __name__)
 api = Api(review)
 
 # Creating a Reviews Resource
 class Reviews(Resource):
+    @jwt_required()
     #  a method to get all reviews
     def get(self):
         # querying the database to get a list of all the reviews

@@ -12,12 +12,16 @@ from reviews import review
 from orders import orders
 from order_product import order_product
 from payment import payment
+from flask_jwt_extended import JWTManager, jwt_required
+from auth import auth
 
 
 
 app = Flask(__name__)
 CORS(app)
 app.config.from_object(Config)
+jwt = JWTManager(app)
+app.register_blueprint(auth)
 
 app.register_blueprint(products)
 app.register_blueprint(users)
@@ -27,6 +31,7 @@ app.register_blueprint(review)
 app.register_blueprint(orders)
 app.register_blueprint(order_product)
 app.register_blueprint(payment)
+
 
 
 db.init_app(app)

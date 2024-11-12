@@ -13,7 +13,7 @@ from orders import orders
 from order_product import order_product
 from payment import payment
 from flask_jwt_extended import JWTManager, jwt_required
-from auth import auth
+from .auth import auth
 
 
 app = Flask(__name__)
@@ -30,7 +30,6 @@ app.register_blueprint(review)
 app.register_blueprint(orders)
 app.register_blueprint(order_product)
 app.register_blueprint(payment)
-
 
 
 db.init_app(app)

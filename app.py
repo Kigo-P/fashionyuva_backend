@@ -7,6 +7,7 @@ from models import db
 from products.products import products
 from users.users import users
 from contacts import contactus
+from address.address import address
 from address import address
 from reviews.reviews import review
 from Orders.orders import orders
@@ -15,7 +16,6 @@ from order_products.order_product import order_product
 from payment.payment import payment
 from flask_jwt_extended import JWTManager
 from payment.mpesa import payment
-
 
 app = Flask(__name__)
 CORS(app)

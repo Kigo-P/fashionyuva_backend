@@ -199,4 +199,4 @@ class CheckStatus(Resource):
 # Register resource routes with the Blueprint API
 api.add_resource(InitiatePayment, "/initiate")
 api.add_resource(Callback, "/callback")
-api.add_resource(CheckStatus, "/status/<int:checkout_id>")
+api.add_resource(CheckStatus, "/status/<string:checkout_id>")

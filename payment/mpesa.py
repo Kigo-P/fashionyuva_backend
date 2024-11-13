@@ -193,7 +193,9 @@ class Callback(Resource):
 
 class CheckStatus(Resource):
     def get(self, checkout_id):
-        return make_response(jsonify({"message": "success"}), 200)
+        return make_response(
+            jsonify({"message": "success", "status": "completed"}), 200
+        )
 
 
 # Register resource routes with the Blueprint API

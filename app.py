@@ -14,6 +14,9 @@ from authentification.auth import auth
 from order_products.order_product import order_product
 from flask_jwt_extended import JWTManager
 from payment.mpesa import payment
+from newsletters.newsletter import newsletter
+from categories.category import category
+
 
 app = Flask(__name__)
 CORS(app)
@@ -29,6 +32,8 @@ app.register_blueprint(review)
 app.register_blueprint(orders)
 app.register_blueprint(order_product)
 app.register_blueprint(payment, url_prefix="/api/payment")
+app.register_blueprint(newsletter)
+app.register_blueprint(category)
 
 
 db.init_app(app)

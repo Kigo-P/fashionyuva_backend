@@ -149,6 +149,7 @@ class Category(db.Model, SerializerMixin):
     # creating columns
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(), nullable=False)
+    description = db.Column(db.String(), nullable=False)
 
     # a relationship that maps the categories to the products
     product = db.relationship("Product", back_populates="categories")

@@ -47,7 +47,7 @@ class MpesaService:
                 "PartyA": int(phone_number),
                 "PartyB": self.config["MPESA_BUSINESS_SHORTCODE"],
                 "PhoneNumber": int(phone_number),
-                "CallBackURL": self.config["MPESA_CALLBACK_URL"],
+                "CallBackURL": "https://fashionyuva.onrender.com/api/payment/callback",
                 "AccountReference": "Online Store",
                 "TransactionDesc": "Payment for products",
             }
@@ -122,6 +122,7 @@ class Callback(Resource):
         try:
             print("callback endpoint has been hit")
             callback_data = request.get_json()
+            print(callback_data)
 
             result_code = (
                 callback_data.get("Body", {}).get("stkCallback", {}).get("ResultCode")

@@ -12,7 +12,6 @@ from reviews.reviews import review
 from Orders.orders import orders
 from authentification.auth import auth
 from order_products.order_product import order_product
-from payment.payment import payment
 from flask_jwt_extended import JWTManager
 from payment.mpesa import payment
 
@@ -30,7 +29,6 @@ app.register_blueprint(address)
 app.register_blueprint(review)
 app.register_blueprint(orders)
 app.register_blueprint(order_product)
-# app.register_blueprint(payment)
 app.register_blueprint(payment, url_prefix="/api/payment")
 
 

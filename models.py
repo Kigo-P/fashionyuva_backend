@@ -354,10 +354,8 @@ class Transaction(db.Model):
     result_code = db.Column(db.String(5))
     result_desc = db.Column(db.String(100))
     mpesa_receipt = db.Column(db.String(50))
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
-    updated_at = db.Column(
-        db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow
-    )
+    created_at = db.Column(db.DateTime, default=datetime.now())
+    updated_at = db.Column(db.DateTime, default=datetime.now(), onupdate=datetime.now())
 
 
 class TokenBlocklist(db.Model):

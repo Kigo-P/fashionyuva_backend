@@ -6,7 +6,7 @@ from config import Config
 from models import db
 from products.products import products
 from users.users import users
-from contacts import contactus
+from contact.contacts import contact_us
 from addresses.address import address
 from reviews.reviews import review
 from Orders.orders import orders
@@ -23,7 +23,7 @@ jwt = JWTManager(app)
 app.register_blueprint(auth)
 app.register_blueprint(products)
 app.register_blueprint(users)
-app.register_blueprint(contactus)
+app.register_blueprint(contact_us)
 app.register_blueprint(address)
 app.register_blueprint(review)
 app.register_blueprint(orders)

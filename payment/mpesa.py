@@ -4,7 +4,7 @@ import base64
 from datetime import datetime
 from models import Transaction
 from app import db
-from flask import Blueprint, request
+from flask import Blueprint, request, make_response, jsonify
 from flask_restful import Api, Resource
 
 payment = Blueprint("payment", __name__)
@@ -44,13 +44,15 @@ class MpesaService:
                 "Timestamp": timestamp,
                 "TransactionType": "CustomerPayBillOnline",
                 "Amount": int(amount),
-                "PartyA": phone_number,
+                "PartyA": int(phone_number),
                 "PartyB": self.config["MPESA_BUSINESS_SHORTCODE"],
-                "PhoneNumber": phone_number,
+                "PhoneNumber": int(phone_number),
                 "CallBackURL": self.config["MPESA_CALLBACK_URL"],
                 "AccountReference": "Online Store",
                 "TransactionDesc": "Payment for products",
             }
+
+            print(payload)
 
             response = requests.request(
                 "POST",
@@ -189,6 +191,12 @@ class Callback(Resource):
             return {"error": str(e)}, 500
 
 
+class CheckStatus(Resource):
+    def get(self, checkout_id):
+        return make_response(jsonify({"message": "success"}), 200)
+
+
 # Register resource routes with the Blueprint API
 api.add_resource(InitiatePayment, "/initiate")
 api.add_resource(Callback, "/callback")
+api.add_resource(CheckStatus, "/status/<int:checkout_id>")

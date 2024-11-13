@@ -26,10 +26,13 @@ def seed_data():
     db.drop_all()
     db.create_all()
 
-    # Create Categories
+    # Create Categories with a default description value
     categories = []
     for _ in range(5):
-        category = Category(name=fake.word().capitalize())
+        category = Category(
+            name=fake.word().capitalize(),
+            description="Default description" 
+        )
         db.session.add(category)
         categories.append(category)
     db.session.commit()

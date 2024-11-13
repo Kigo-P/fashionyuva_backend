@@ -5,23 +5,24 @@ from flask_restful import Api, Resource
 from config import Config
 from models import db
 from products.products import products
-from users import users
+from users.users import users
 from contacts import contactus
 from address.address import address
-from reviews import review
-from orders import orders
-from order_product import order_product
-from payment import payment
-from flask_jwt_extended import JWTManager, jwt_required
-from auth import auth
-
+from address import address
+from reviews.reviews import review
+from Orders.orders import orders
+from authentification.auth import auth
+from order_products.order_product import order_product
+from payment.payment import payment
+from flask_jwt_extended import JWTManager
+from payment.mpesa import payment
 
 app = Flask(__name__)
 CORS(app)
 app.config.from_object(Config)
 jwt = JWTManager(app)
-app.register_blueprint(auth)
 
+app.register_blueprint(auth)
 app.register_blueprint(products)
 app.register_blueprint(users)
 app.register_blueprint(contactus)
@@ -29,8 +30,8 @@ app.register_blueprint(address)
 app.register_blueprint(review)
 app.register_blueprint(orders)
 app.register_blueprint(order_product)
-app.register_blueprint(payment)
-
+# app.register_blueprint(payment)
+app.register_blueprint(payment, url_prefix="/api/payment")
 
 
 db.init_app(app)

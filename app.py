@@ -7,8 +7,7 @@ from models import db
 from products.products import products
 from users.users import users
 from contacts import contactus
-from address.address import address
-from address import address
+from addresses.address import address
 from reviews.reviews import review
 from Orders.orders import orders
 from authentification.auth import auth

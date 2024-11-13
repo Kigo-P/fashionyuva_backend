@@ -52,8 +52,6 @@ class MpesaService:
                 "TransactionDesc": "Payment for products",
             }
 
-            print(payload)
-
             response = requests.request(
                 "POST",
                 "https://sandbox.safaricom.co.ke/mpesa/stkpush/v1/processrequest",
@@ -67,15 +65,16 @@ class MpesaService:
 
             data = response.json()
 
-            # Create transaction record
-            # transaction = Transaction(
-            #     merchant_request_id=data.get("MerchantRequestID"),
-            #     checkout_request_id=data.get("CheckoutRequestID"),
-            #     phone_number=phone_number,
-            #     amount=amount,
-            # )
-            # db.session.add(transaction)
-            # db.session.commit()
+            print("Saving Request to database")
+
+            transaction = Transaction(
+                merchant_request_id=data.get("MerchantRequestID"),
+                checkout_request_id=data.get("CheckoutRequestID"),
+                phone_number=phone_number,
+                amount=amount,
+            )
+            db.session.add(transaction)
+            db.session.commit()
 
             return data
 
@@ -105,7 +104,6 @@ class InitiatePayment(Resource):
             if not phone_number or not amount:
                 return {"error": "Phone number and amount are required."}, 400
 
-            # Format phone number if necessary
             if phone_number.startswith("0"):
                 phone_number = "254" + phone_number[1:]
             elif not phone_number.startswith("254"):
@@ -122,9 +120,9 @@ class Callback(Resource):
     def post(self):
         """Callback endpoint for M-Pesa to receive payment status."""
         try:
+            print("callback endpoint has been hit")
             callback_data = request.get_json()
 
-            # Extract necessary fields from the callback
             result_code = (
                 callback_data.get("Body", {}).get("stkCallback", {}).get("ResultCode")
             )
@@ -142,7 +140,6 @@ class Callback(Resource):
                 .get("CheckoutRequestID")
             )
 
-            # If payment is successful
             if result_code == 0:
                 payment_details = (
                     callback_data.get("Body", {})
@@ -151,7 +148,6 @@ class Callback(Resource):
                     .get("Item", [])
                 )
 
-                # Extract payment details
                 amount = next(
                     (
                         item.get("Value")
@@ -169,7 +165,6 @@ class Callback(Resource):
                     None,
                 )
 
-                # Update transaction status in the database
                 transaction = Transaction.query.filter_by(
                     checkout_request_id=checkout_request_id
                 ).first()
@@ -178,6 +173,7 @@ class Callback(Resource):
                     transaction.result_desc = result_desc
                     transaction.amount = amount
                     transaction.mpesa_receipt = mpesa_receipt
+                    transaction.status = "completed"
                     db.session.commit()
 
             return {
@@ -193,9 +189,23 @@ class Callback(Resource):
 
 class CheckStatus(Resource):
     def get(self, checkout_id):
-        return make_response(
-            jsonify({"message": "success", "status": "completed"}), 200
-        )
+        transaction = Transaction.query.filter_by(
+            checkout_request_id=checkout_id
+        ).first()
+
+        if transaction:
+            response_data = {
+                "message": "success",
+                "status": transaction.status,
+                "amount": transaction.amount,
+                "phone_number": transaction.phone_number,
+                "mpesa_receipt": transaction.mpesa_receipt,
+                "result_code": transaction.result_code,
+                "result_desc": transaction.result_desc,
+            }
+            return make_response(jsonify(response_data), 200)
+
+        return make_response(jsonify({"error": "Transaction not found"}), 404)
 
 
 api.add_resource(InitiatePayment, "/initiate")

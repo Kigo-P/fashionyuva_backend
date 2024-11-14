@@ -8,7 +8,7 @@ api = Api(orders)
 class Orders(Resource):
     def get(self):
         orders = Order.query.all()
-        order_dict = [order.to_dict() for order in Orders]
+        order_dict = [order.to_dict() for order in orders]
         response = make_response(order_dict, 200)
         return response
 
@@ -45,7 +45,7 @@ class OrdersById(Resource):
         if order:
             data = request.get_json()
             for attr in data:
-                setattr(order, atrr, data[attr])
+                setattr(order, attr, data[attr])
 
                 db.session.commit()
 

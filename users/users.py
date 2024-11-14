@@ -30,6 +30,22 @@ class Users(Resource):
     def post(self):
         #  creating a new user
         data = request.get_json()
+        
+        # Validate email format
+        if "@" not in data["email"]:
+            # creating and returning a response based on the response body
+            response_body ={"error": "Please include an '@' in the email address."}
+            response = make_response(response_body, 400)
+            return response
+
+        # Check if email already exists in the database
+        if User.query.filter_by(email=data["email"]).first():
+            # creating and returning a response based on the response body
+            response_body ={"error": "Email already exists"}
+            response = make_response(response_body, 400)
+            return response
+
+        
         #  generating a password hash
         password = generate_password_hash(data["password"])
         new_user = User(

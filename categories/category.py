@@ -1,6 +1,8 @@
 from models import Category, db
 from flask import Blueprint, make_response, jsonify, request
 from flask_restful import Api, Resource
+from authentification.auth import allow
+from flask_jwt_extended import jwt_required
 
 category = Blueprint("category", __name__)
 api = Api(category)
@@ -16,6 +18,8 @@ class Categories(Resource):
         response = make_response(category_dict, 200)
         return response
     
+    @jwt_required()
+    @allow("admin")
     # a method to post an category
     def post(self):
         #  creating a new category
@@ -54,6 +58,8 @@ class CategoriesById(Resource):
             response = make_response(response_body, 404)
             return response
     
+    @jwt_required()
+    @allow("admin")
     #  a method to update an category
     def patch(self, id):
         # querying and filtering the database using the id
@@ -76,6 +82,8 @@ class CategoriesById(Resource):
             response = make_response(response_body, 404)
             return response
     
+    @jwt_required()
+    @allow("admin")
     #  a method to delete the category
     def delete(self, id):
         category = Category.query.filter_by(id=id).first()

@@ -1,11 +1,15 @@
 from models import Newsletter,db
 from flask import Blueprint, make_response, jsonify, request
 from flask_restful import Api, Resource
+from authentification.auth import allow
+from flask_jwt_extended import jwt_required
 
 newsletter = Blueprint("newsletter", __name__)
 api = Api(newsletter)
 
 class Newsletters(Resource):
+    @jwt_required()
+    @allow("admin")
     #  a method to get all newsletter
     def get(self):
         # querying the database to get a list of all the newsletters
@@ -37,6 +41,8 @@ class Newsletters(Resource):
 
 # creating a NewslettersById Resource
 class NewslettersById(Resource):
+    @jwt_required()
+    @allow("admin")
     #  a method to get one newsletter
     def get(self,id):
         # querying and filtering the database using the id

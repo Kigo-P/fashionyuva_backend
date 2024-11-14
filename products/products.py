@@ -2,6 +2,8 @@ from flask import Blueprint, make_response, jsonify, request
 from flask_restful import Api, Resource
 from psycopg2 import IntegrityError
 from models import Product, db, Category, Image
+from authentification.auth import allow
+from flask_jwt_extended import jwt_required
 
 products = Blueprint("products", __name__)
 api = Api(products)
@@ -12,6 +14,8 @@ class Products(Resource):
         products = Product.query.all()
         return make_response(jsonify([product.to_dict() for product in products]), 200)
 
+    @jwt_required()
+    @allow("admin")
     def post(self):
         data = request.get_json()
         try:
@@ -65,7 +69,9 @@ class SingleProduct(Resource):
             return make_response(jsonify({"error": "Product not found"}), 404)
         return make_response(jsonify(product.to_dict()), 200)
 
-    def put(self, product_id):
+    @jwt_required()
+    @allow("admin")
+    def patch(self, product_id):
         product = Product.query.get(product_id)
         if not product:
             return make_response(jsonify({"error": "Product not found"}), 404)
@@ -88,6 +94,8 @@ class SingleProduct(Resource):
             db.session.rollback()
             return make_response(jsonify({"error": str(e)}), 400)
 
+    @jwt_required()
+    @allow("admin")
     def delete(self, product_id):
         product = Product.query.get(product_id)
         if not product:

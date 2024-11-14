@@ -46,7 +46,7 @@ class SingleAddressResource(Resource):
         
         return make_response(jsonify(address.to_dict(rules=("-user",))), 200)
 
-    def put(self, address_id):
+    def patch(self, address_id):
         address = Address.query.get(address_id)
         if not address:
             return make_response(jsonify({"error": "Address not found"}), 404)

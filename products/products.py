@@ -65,7 +65,7 @@ class SingleProduct(Resource):
             return make_response(jsonify({"error": "Product not found"}), 404)
         return make_response(jsonify(product.to_dict()), 200)
 
-    def put(self, product_id):
+    def patch(self, product_id):
         product = Product.query.get(product_id)
         if not product:
             return make_response(jsonify({"error": "Product not found"}), 404)

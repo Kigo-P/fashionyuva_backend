@@ -3,13 +3,10 @@ from sqlalchemy_serializer import SerializerMixin
 from werkzeug.security import generate_password_hash, check_password_hash
 from sqlalchemy import MetaData
 from flask_sqlalchemy import SQLAlchemy
+from datetime import datetime
 
 #  initializing metadata and adding it to the db
-metadata = MetaData(
-    naming_convention={
-        "fk": "fk_%(table_name)s_%(column_0_name)s_%(referred_table_name)s",
-    }
-)
+metadata = MetaData()
 
 db = SQLAlchemy(metadata=metadata)
 
@@ -53,7 +50,6 @@ class User(db.Model, SerializerMixin):
         "-contactus.user",
         "-reviews.user",
     )
-    
 
     # validating the email
     @validates("email")
@@ -93,7 +89,9 @@ class Product(db.Model, SerializerMixin):
     category_id = db.Column(db.Integer, db.ForeignKey("categories.id"))
 
     # a relationship that maps the product to the images
-    images = db.relationship("Image", back_populates="product", cascade="all, delete-orphan")
+    images = db.relationship(
+        "Image", back_populates="product", cascade="all, delete-orphan"
+    )
     # a relationship that maps the product to the categories
     categories = db.relationship("Category", back_populates="product")
     # a relationship that maps the product to the orderproducts
@@ -135,9 +133,7 @@ class Image(db.Model, SerializerMixin):
     product_id = db.Column(db.Integer, db.ForeignKey("products.id"))
 
     # a relationship that maps the images to the products
-    product = db.relationship(
-        "Product", back_populates="images", single_parent=True
-    )
+    product = db.relationship("Product", back_populates="images", single_parent=True)
 
     serialize_rules = ("-product.images",)
 
@@ -153,6 +149,7 @@ class Category(db.Model, SerializerMixin):
     # creating columns
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(), nullable=False)
+    description = db.Column(db.String(), nullable=False)
 
     # a relationship that maps the categories to the products
     product = db.relationship("Product", back_populates="categories")
@@ -345,6 +342,21 @@ class Newsletter(db.Model, SerializerMixin):
     def __repr__(self):
         return f"<Newsletter {self.id}: {self.email} has been created>"
 
+
+class Transaction(db.Model):
+    __tablename__ = "transactions"
+
+    id = db.Column(db.Integer, primary_key=True)
+    merchant_request_id = db.Column(db.String(50), unique=True)
+    checkout_request_id = db.Column(db.String(50), unique=True)
+    phone_number = db.Column(db.String(15))
+    amount = db.Column(db.Float)
+    status = db.Column(db.String(20), default="pending")
+    result_code = db.Column(db.String(5))
+    result_desc = db.Column(db.String(100))
+    mpesa_receipt = db.Column(db.String(50))
+    created_at = db.Column(db.DateTime, default=datetime.now())
+    updated_at = db.Column(db.DateTime, default=datetime.now(), onupdate=datetime.now())
 
 
 class TokenBlocklist(db.Model):

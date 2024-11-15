@@ -5,32 +5,35 @@ from flask_restful import Api, Resource
 from config import Config
 from models import db
 from products.products import products
-from users import users
-from contacts import contactus
-from address import address
-from reviews import review
-from orders import orders
-from order_product import order_product
-from payment import payment
-from flask_jwt_extended import JWTManager, jwt_required
-from auth import auth
+from users.users import users
+from contact.contacts import contact_us
+from addresses.address import address
+from reviews.reviews import review
+from Orders.orders import orders
+from authentification.auth import auth
+from order_products.order_product import order_product
+from flask_jwt_extended import JWTManager
+from payment.mpesa import payment
+from newsletters.newsletter import newsletter
+from categories.category import category
 
 
 app = Flask(__name__)
 CORS(app)
 app.config.from_object(Config)
 jwt = JWTManager(app)
-app.register_blueprint(auth)
 
+app.register_blueprint(auth)
 app.register_blueprint(products)
 app.register_blueprint(users)
-app.register_blueprint(contactus)
+app.register_blueprint(contact_us)
 app.register_blueprint(address)
 app.register_blueprint(review)
 app.register_blueprint(orders)
 app.register_blueprint(order_product)
-app.register_blueprint(payment)
-
+app.register_blueprint(payment, url_prefix="/api/payment")
+app.register_blueprint(newsletter)
+app.register_blueprint(category)
 
 
 db.init_app(app)
@@ -39,6 +42,14 @@ api = Api(app)
 
 with app.app_context():
     db.create_all()
+
+
+@app.before_request
+def handle_options_request():
+    if request.method == "OPTIONS":
+        response = make_response("", 200)
+        response.headers["Allow"] = ("GET, POST, PUT, DELETE, OPTIONS", "PATCH")
+        return response
 
 
 class Wake(Resource):

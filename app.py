@@ -44,6 +44,14 @@ with app.app_context():
     db.create_all()
 
 
+@app.before_request
+def handle_options_request():
+    if request.method == "OPTIONS":
+        response = make_response("", 200)
+        response.headers["Allow"] = ("GET, POST, PUT, DELETE, OPTIONS", "PATCH")
+        return response
+
+
 class Wake(Resource):
     def get(self):
         return make_response(jsonify({"message": "server is awake"}), 200)

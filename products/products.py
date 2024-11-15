@@ -96,17 +96,10 @@ class SingleProduct(Resource):
             return make_response(jsonify({"message": "Product not found"}), 404)
 
         data = request.get_json()
+        print(data)
         try:
-            product.title = data.get("title", product.title)
-            product.description = data.get("description", product.description)
-            product.price = data.get("price", product.price)
-            product.size = data.get("size", product.size)
-            product.color = data.get("color", product.color)
-            product.material = data.get("material", product.material)
-            product.quantity = data.get("quantity", product.quantity)
-            product.image_id = data.get("image_id", product.image_id)
-            product.category_id = data.get("category_id", product.category_id)
-
+            for attr in data:
+                setattr(product, attr, data[attr])
             db.session.commit()
             return make_response(jsonify(product.to_dict()), 200)
         except KeyError as e:

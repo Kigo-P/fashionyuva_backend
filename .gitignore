@@ -3,3 +3,10 @@
 migrations/
 venv/
 __pycache__/
+*.pyc
+*.pyo
+*.py[cod]
+*$py.class
+
+# C extensions
+*.so

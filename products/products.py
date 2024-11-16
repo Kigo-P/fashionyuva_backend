@@ -3,6 +3,9 @@ from flask_restful import Api, Resource
 from psycopg2 import IntegrityError
 from sqlalchemy.exc import SQLAlchemyError
 from models import Product, db, Category, Image
+from authentification.auth import allow
+from flask_jwt_extended import jwt_required
+
 
 products = Blueprint("products", __name__)
 api = Api(products)
@@ -20,6 +23,8 @@ class Products(Resource):
                 jsonify({"message": "Error fetching products", "error": str(e)}), 500
             )
 
+    @jwt_required()
+    @allow("admin")
     def post(self):
         data = request.get_json()
         try:
@@ -90,6 +95,8 @@ class SingleProduct(Resource):
                 jsonify({"message": "Error fetching product", "error": str(e)}), 500
             )
 
+    @jwt_required()
+    @allow("admin")
     def patch(self, product_id):
         product = Product.query.get(product_id)
         if not product:
@@ -119,6 +126,8 @@ class SingleProduct(Resource):
                 500,
             )
 
+    @jwt_required()
+    @allow("admin")
     def delete(self, product_id):
         product = Product.query.get(product_id)
         if not product:

@@ -6,6 +6,7 @@ from models import Product, db, Category, Image
 from authentification.auth import allow
 from flask_jwt_extended import jwt_required
 
+
 products = Blueprint("products", __name__)
 api = Api(products)
 
@@ -94,6 +95,8 @@ class SingleProduct(Resource):
                 jsonify({"message": "Error fetching product", "error": str(e)}), 500
             )
 
+    @jwt_required()
+    @allow("admin")
     def patch(self, product_id):
         product = Product.query.get(product_id)
         if not product:

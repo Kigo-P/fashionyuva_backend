@@ -2,6 +2,8 @@ from models import ContactUs, db
 from flask import Blueprint, make_response, jsonify, request
 from flask_restful import Api, Resource
 from sqlalchemy.exc import SQLAlchemyError
+from authentification.auth import allow
+from flask_jwt_extended import jwt_required
 
 contact_us = Blueprint("contact_us", __name__)
 api = Api(contact_us)
@@ -9,6 +11,8 @@ api = Api(contact_us)
 
 class ContactUss(Resource):
 
+    @jwt_required()
+    @allow("admin")
     def get(self):
         try:
             contacts = ContactUs.query.all()
@@ -44,7 +48,8 @@ class ContactUss(Resource):
 
 
 class ContactUsById(Resource):
-
+    @jwt_required()
+    @allow("admin")
     def get(self, id):
         try:
             contact = ContactUs.query.filter_by(id=id).first()

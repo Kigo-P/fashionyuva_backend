@@ -1,17 +1,23 @@
 from models import Order, db
 from flask import Blueprint, make_response, jsonify, request
 from flask_restful import Api, Resource
+from authentification.auth import allow
+from flask_jwt_extended import jwt_required
 
 orders = Blueprint("orders", __name__)
 api = Api(orders)
 
 class Orders(Resource):
+    @jwt_required()
+    @allow("admin")
     def get(self):
         orders = Order.query.all()
         order_dict = [order.to_dict() for order in orders]
         response = make_response(order_dict, 200)
         return response
 
+    @jwt_required()
+    @allow("customer")
     def post(self):
         data = request.get_json()
         new_order = Order(
@@ -29,6 +35,8 @@ class Orders(Resource):
     pass
 
 class OrdersById(Resource):
+    @jwt_required()
+    @allow("customer", "admin")
     def get(self, id):
         order = Order.query.filter_by(id=id).first()
         if order:
@@ -39,6 +47,7 @@ class OrdersById(Resource):
             response_body = {"message":"Order not found :("}
             response = make_response(response_body, 404)
             return response
+
 
     def patch(self, id):
         order = Order.query.filter_by(id=id).first()

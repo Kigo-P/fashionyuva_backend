@@ -2,12 +2,16 @@ from models import Newsletter, db
 from flask import Blueprint, make_response, jsonify, request
 from flask_restful import Api, Resource
 from sqlalchemy.exc import SQLAlchemyError, IntegrityError
+from authentification.auth import allow
+from flask_jwt_extended import jwt_required
 
 newsletter = Blueprint("newsletter", __name__)
 api = Api(newsletter)
 
 
 class Newsletters(Resource):
+    @jwt_required()
+    @allow("admin")
     def get(self):
         try:
             newsletters = Newsletter.query.all()
@@ -55,7 +59,8 @@ class Newsletters(Resource):
 
 
 class NewslettersById(Resource):
-
+    @jwt_required()
+    @allow("admin")
     def get(self, id):
         try:
             newsletter = Newsletter.query.filter_by(id=id).first()

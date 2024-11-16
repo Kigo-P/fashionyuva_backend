@@ -2,6 +2,8 @@ from models import Category, db
 from flask import Blueprint, make_response, jsonify, request
 from flask_restful import Api, Resource
 from sqlalchemy.exc import SQLAlchemyError
+from authentification.auth import allow
+from flask_jwt_extended import jwt_required
 
 category = Blueprint("category", __name__)
 api = Api(category)
@@ -34,6 +36,8 @@ class Categories(Resource):
             response = make_response(response_body, 500)
             return response
 
+    @jwt_required()
+    @allow("admin")
     def post(self):
         try:
 
@@ -94,6 +98,9 @@ class CategoriesById(Resource):
             response_body = {"message": f"An unexpected error occurred: {str(e)}"}
             response = make_response(response_body, 500)
             return response
+    
+    @jwt_required()
+    @allow("admin")
     def patch(self, id):
         try:
 
@@ -128,6 +135,9 @@ class CategoriesById(Resource):
             response_body = {"message": f"An unexpected error occurred: {str(e)}"}
             response = make_response(response_body, 500)
             return response
+        
+    @jwt_required()
+    @allow("admin")
     def delete(self, id):
         try:
 

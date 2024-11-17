@@ -169,6 +169,7 @@ class Order(db.Model, SerializerMixin):
     id = db.Column(db.Integer, primary_key=True)
     total_price = db.Column(db.Integer(), nullable=False)
     status = db.Column(db.String(), nullable=False)
+    receipt_no = db.Column(db.String(), nullable=False)
     created_at = db.Column(db.DateTime, default=db.func.current_timestamp())
     updated_at = db.Column(db.DateTime, default=db.func.current_timestamp())
     # Foreign key from the user_id

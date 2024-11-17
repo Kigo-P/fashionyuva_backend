@@ -122,8 +122,6 @@ class Callback(Resource):
         try:
             print("callback endpoint has been hit")
             callback_data = request.get_json()
-            print(callback_data)
-
             result_code = (
                 callback_data.get("Body", {}).get("stkCallback", {}).get("ResultCode")
             )
@@ -176,13 +174,28 @@ class Callback(Resource):
                     transaction.mpesa_receipt = mpesa_receipt
                     transaction.status = "completed"
                     db.session.commit()
-
-            return {
-                "ResultCode": 0,
-                "ResultDesc": "Success",
-                "MerchantRequestID": merchant_request_id,
-                "CheckoutRequestID": checkout_request_id,
-            }
+                return {
+                    "ResultCode": 0,
+                    "ResultDesc": "Success",
+                    "MerchantRequestID": merchant_request_id,
+                    "CheckoutRequestID": checkout_request_id,
+                }
+            else:
+                print(checkout_request_id)
+                transaction = Transaction.query.filter_by(
+                    checkout_request_id=checkout_request_id
+                ).first()
+                if transaction:
+                    transaction.result_code = result_code
+                    transaction.result_desc = result_desc
+                    transaction.status = "failed"
+                    db.session.commit()
+                return {
+                    "ResultCode": 1,
+                    "ResultDesc": "Failed",
+                    "MerchantRequestID": merchant_request_id,
+                    "CheckoutRequestID": checkout_request_id,
+                }
 
         except Exception as e:
             return {"error": str(e)}, 500
@@ -196,7 +209,6 @@ class CheckStatus(Resource):
 
         if transaction:
             response_data = {
-                "message": "success",
                 "status": transaction.status,
                 "amount": transaction.amount,
                 "phone_number": transaction.phone_number,

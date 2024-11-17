@@ -5,6 +5,7 @@ from flask_restful import Api, Resource
 order_product = Blueprint("order_product", __name__)
 api = Api(order_product)
 
+
 class OrderProducts(Resource):
     #  a method to get all order_products
     def get(self):
@@ -15,32 +16,32 @@ class OrderProducts(Resource):
         # creating and making a response
         response = make_response(orderproduct_dict, 200)
         return response
-    
+
     # a method to post an order_product
+
     def post(self):
-        #  creating a new orderproduct
         data = request.get_json()
-        new_orderproduct = OrderProduct(
-            quantity = data["quantity"],
-            product_id = data["product_id"],
-            order_id = data["order_id"],
-        )
+        new_orderproducts = []
 
-        #  adding and commiting the new orderproduct to the database
-        db.session.add(new_orderproduct)
+        for prod in data["cart"]:
+            new_orderproduct = OrderProduct(
+                quantity=prod["quantity"],
+                product_id=prod["id"],
+                order_id=prod.get("order_id", prod["order_id"]),
+            )
+            db.session.add(new_orderproduct)
+            db.session.flush()
+            new_orderproducts.append(new_orderproduct.to_dict())
+
         db.session.commit()
-
-        #  making new_orderproduct to a dictionary
-        new_orderproduct_dict = new_orderproduct.to_dict()
-        #  creating and returning a response
-        response = make_response(new_orderproduct_dict, 201)
+        response = make_response(jsonify(new_orderproducts), 201)
         return response
-    pass
+
 
 # creating a OrderProductsById Resource
 class OrderProductsById(Resource):
     #  a method to get one orderproduct
-    def get(self,id):
+    def get(self, id):
         # querying and filtering the database using the id
         orderproduct = OrderProduct.query.filter_by(id=id).first()
         if orderproduct:
@@ -51,10 +52,10 @@ class OrderProductsById(Resource):
             return response
         else:
             #  creating and returning a response based on the response body
-            response_body = {"message":"OrderProduct not found"}
+            response_body = {"message": "OrderProduct not found"}
             response = make_response(response_body, 404)
             return response
-    
+
     #  a method to update an orderproduct
     def patch(self, id):
         # querying and filtering the database using the id
@@ -64,7 +65,7 @@ class OrderProductsById(Resource):
             #  creating a for loop to set the attributes
             for attr in data:
                 setattr(orderproduct, attr, data[attr])
-            
+
             # commiting to the database
             db.session.commit()
             #  making orderproduct to a dictionary
@@ -73,10 +74,10 @@ class OrderProductsById(Resource):
             return response
         else:
             #  creating and returning a response based on the response body
-            response_body = {"message":"OrderProduct not found"}
+            response_body = {"message": "OrderProduct not found"}
             response = make_response(response_body, 404)
             return response
-    
+
     #  a method to delete the review
     def delete(self, id):
         orderproduct = OrderProduct.query.filter_by(id=id).first()
@@ -85,7 +86,7 @@ class OrderProductsById(Resource):
             db.session.commit()
 
             #  creating and returning a response based on the response body
-            response_body = {"message":"OrderProduct deleted successfully"}
+            response_body = {"message": "OrderProduct deleted successfully"}
             response = make_response(response_body, 204)
             return response
         else:
@@ -96,5 +97,8 @@ class OrderProductsById(Resource):
 
     pass
 
+
 api.add_resource(OrderProducts, "/order-products", endpoint="order_products")
-api.add_resource(OrderProductsById, "/order-products/<int:id>",endpoint="order_products_by_id" )
+api.add_resource(
+    OrderProductsById, "/order-products/<int:id>", endpoint="order_products_by_id"
+)

@@ -51,8 +51,8 @@ class Orders(Resource):
 
 
 class OrdersById(Resource):
-    @jwt_required()
-    @allow("customer", "admin")
+    # @jwt_required()
+    # @allow("customer", "admin")
     def get(self, id):
         order = Order.query.filter_by(id=id).first()
         if order:

@@ -47,7 +47,7 @@ class MpesaService:
                 "PartyA": int(phone_number),
                 "PartyB": self.config["MPESA_BUSINESS_SHORTCODE"],
                 "PhoneNumber": int(phone_number),
-                "CallBackURL": "https://fashionyuva.nullchemy.com/api/payment/callback",
+                "CallBackURL": "https://mudfish-major-jackal.ngrok-free.app/api/payment/callback",
                 "AccountReference": "Online Store",
                 "TransactionDesc": "Payment for products",
             }

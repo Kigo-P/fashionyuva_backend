@@ -104,10 +104,19 @@ class SingleProduct(Resource):
 
         data = request.get_json()
         print(data)
+
         try:
-            for attr in data:
-                setattr(product, attr, data[attr])
+            images = data.pop("images", [])
+
+            for attr, value in data.items():
+                setattr(product, attr, value)
             db.session.commit()
+
+            for image_url in images:
+                new_image = Image(url=image_url, product_id=product.id)
+                db.session.add(new_image)
+            db.session.commit()
+
             return make_response(jsonify(product.to_dict()), 200)
         except KeyError as e:
             db.session.rollback()

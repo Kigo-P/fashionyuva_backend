@@ -10,7 +10,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from flask_restful import Resource, Api, reqparse
 from flask import Blueprint, jsonify, make_response, request
 import datetime
-from datetime import timezone
+from datetime import timezone,timedelta, datetime
 from functools import wraps
 from models import User, TokenBlocklist, db
 
@@ -57,8 +57,12 @@ def user_lookup_callback(_jwt_header, jwt_data):
 @jwt.token_in_blocklist_loader
 def check_if_token_is_revoked(jwt_header, jwt_payload: dict):
     jti = jwt_payload["jti"]
-    token_in_blocklist = TokenBlocklist.query.filter_by(jti=jti).first()
-    return token_in_blocklist or None
+    now = datetime.now(timezone.utc)
+    expiration = datetime.fromtimestamp(jwt_payload["exp"], timezone.utc)
+    
+    if now > expiration:
+        return True  
+    return TokenBlocklist.query.filter_by(jti=jti).first() is not None
 
 
 # creating a Login resource

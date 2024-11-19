@@ -120,7 +120,7 @@ class Logout(Resource):
     def get(self):
         jti = get_jwt()["jti"]
         # using the date time to track the date and time the user has logged out
-        now = datetime.datetime.now(timezone.utc)
+        now = datetime.now(timezone.utc)
         # adding and commiting the TokenBlocklist
         db.session.add(TokenBlocklist(jti=jti, created_at=now))
         db.session.commit()

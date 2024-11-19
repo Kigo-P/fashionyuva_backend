@@ -4,6 +4,7 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
+importlib-metadata = "*"
 flask = "*"
 flask-cors = "*"
 flask-migrate = "*"
@@ -18,4 +19,4 @@ requests = "*"
 [dev-packages]
 
 [requires]
-python_version = "3.12"
+python_version = "3.12" 

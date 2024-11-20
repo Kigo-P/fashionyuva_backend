@@ -1,9 +1,10 @@
+from datetime import timezone, datetime
 from flask import Flask, request, jsonify, make_response
 from flask_cors import CORS
 from flask_migrate import Migrate
 from flask_restful import Api, Resource
 from config import Config
-from models import db
+from models import TokenBlocklist, User, db
 from products.products import products
 from users.users import users
 from contact.contacts import contact_us
@@ -44,6 +45,37 @@ api = Api(app)
 
 with app.app_context():
     db.create_all()
+
+
+@jwt.expired_token_loader
+def expired_token_callback(jwt_header, jwt_payload):
+    return (
+        jsonify(
+            {
+                "message": "The token has expired. Please log in again.",
+                "error": "token_expired",
+            }
+        ),
+        401,
+    )
+
+
+@jwt.user_lookup_loader
+def user_lookup_callback(_jwt_header, jwt_data):
+    identity = jwt_data["sub"]
+    return User.query.filter_by(id=identity).first()
+
+
+# confirming whether the jti is in the token blocklist
+@jwt.token_in_blocklist_loader
+def check_if_token_is_revoked(jwt_header, jwt_payload: dict):
+    jti = jwt_payload["jti"]
+    now = datetime.now(timezone.utc)
+    expiration = datetime.fromtimestamp(jwt_payload["exp"], timezone.utc)
+
+    if now > expiration:
+        return True
+    return TokenBlocklist.query.filter_by(jti=jti).first() is not None
 
 
 @app.before_request

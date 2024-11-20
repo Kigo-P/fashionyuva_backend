@@ -6,16 +6,14 @@ from flask_jwt_extended import (
     jwt_required,
     get_jwt_identity,
 )
+from jwt import ExpiredSignatureError
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_restful import Resource, Api, reqparse
 from flask import Blueprint, jsonify, make_response, request
 import datetime
-from datetime import timezone
+from datetime import timezone, timedelta, datetime
 from functools import wraps
 from models import User, TokenBlocklist, db
-
-
-jwt = JWTManager()
 
 auth = Blueprint("auth", __name__, url_prefix="/auth")
 api = Api(auth)
@@ -45,20 +43,6 @@ def allow(*roles):
         return decorator
 
     return wrapper
-
-
-@jwt.user_lookup_loader
-def user_lookup_callback(_jwt_header, jwt_data):
-    identity = jwt_data["sub"]
-    return User.query.filter_by(id=identity).first()
-
-
-# confirming whether the jti is in the token blocklist
-@jwt.token_in_blocklist_loader
-def check_if_token_is_revoked(jwt_header, jwt_payload: dict):
-    jti = jwt_payload["jti"]
-    token_in_blocklist = TokenBlocklist.query.filter_by(jti=jti).first()
-    return token_in_blocklist or None
 
 
 # creating a Login resource
@@ -106,23 +90,25 @@ class Login(Resource):
         response = jsonify(access_token=access_token)
         return response
 
-    pass
-
 
 # creating a Logout Resource
 class Logout(Resource):
     # creating a get method
     @jwt_required()
     def get(self):
-        jti = get_jwt()["jti"]
-        # using the date time to track the date and time the user has logged out
-        now = datetime.datetime.now(timezone.utc)
-        # adding and commiting the TokenBlocklist
-        db.session.add(TokenBlocklist(jti=jti, created_at=now))
-        db.session.commit()
-        # creating and returning a response
-        response = {"message": "You have been logged out"}
-        return response
+        try:
+            jti = get_jwt()["jti"]
+            # using the date time to track the date and time the user has logged out
+            now = datetime.now(timezone.utc)
+            # adding and commiting the TokenBlocklist
+            db.session.add(TokenBlocklist(jti=jti, created_at=now))
+            db.session.commit()
+            response = {"message": "You have been logged out"}
+            return response
+        except ExpiredSignatureError:
+            return {"message": "Token expired, but you have been logged out"}, 200
+        except Exception as e:
+            return {"message": f"Token invalid: {str(e)}"}, 401
 
 
 api.add_resource(Login, "/login", endpoint="login")

@@ -47,7 +47,7 @@ class MpesaService:
                 "PartyA": int(phone_number),
                 "PartyB": self.config["MPESA_BUSINESS_SHORTCODE"],
                 "PhoneNumber": int(phone_number),
-                "CallBackURL": "https://mudfish-major-jackal.ngrok-free.app/api/payment/callback",
+                "CallBackURL": self.config["MPESA_CALLBACK_URL"],
                 "AccountReference": "Online Store",
                 "TransactionDesc": "Payment for products",
             }
